@@ -6,11 +6,11 @@ const mongoose = require('mongoose');
 /* realiza la conection to Db */
 const dbConnection = async() => {
     try {
-        await mongoose.connect(process.env.DB_CNN, {
+        /* await mongoose.connect(process.env.DB_CNN, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useCreateIndex: true
-        });
+        }); */
         console.log('DB Connected')
     } catch (error) {
         console.log(error)
