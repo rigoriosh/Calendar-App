@@ -1,25 +1,35 @@
 const {response} = require('express');
 const bcryptjs = require('bcryptjs');
 const UsuarioModels = require('../models/UsuarioModels');
-const { errorAdmin } = require('../utils/utilsLogic');
+const { errorAdmin, errorNotEmail, errorExisteEmail, wrongPassword } = require('../helpers/msgErrors');
+const { generarJWT } = require('../helpers/jwt');
 
-const loginUsuario = (req, res = response) => {
+const loginUsuario = async(req, res = response) => {
     const {email, password} = req.body
     try {
         /* verificar si el email no existe en la db */
         let usuarioModel = await UsuarioModels.findOne({email: email})
         if (!usuarioModel) {
-            return res.status(400).json({
-                ok: false,
-                msg: `El ${email} no existe en la db`
-            })
+            return errorNotEmail(email, res);
         }
+
+        /* confirmar los passwords */
+        const validaPassword = bcryptjs.compareSync(password, usuarioModel.password);
+        if (!validaPassword) {
+            return wrongPassword(res);
+        }
+
+        // generar jwt
+        const token = await generarJWT(usuarioModel.id, usuarioModel.name);
+
         res.status(200).json({
             msg: 'loginUsuario',
-            user: {email, password}
+            uid: usuarioModel.id,
+            name: usuarioModel.name,
+            token
         })
     } catch (error) {
-        errorAdmin();
+        errorAdmin(error, res);
     }
 }
 
@@ -28,34 +38,39 @@ const crearUsuario = async(req, res = response) => {
     
     try {
         /* verificar si el email no existe en la db */
-        let usuarioModel = await UsuarioModels.findOne({email: email})
+        let usuarioModel = await UsuarioModels.findOne({email})
         if (usuarioModel) {
-            return res.status(400).json({
-                ok: false,
-                msg: `El ${email} ya existe en la db`
-            })
+            return errorExisteEmail(email, res)
         }
         
-        usuarioModel = new UsuarioModels(req.body);// instacia la coleccion de mongo
+        usuarioModel = new UsuarioModels(req.body);// instancia la coleccion de mongo
         //encripta la contraseña
         const salt = bcryptjs.genSaltSync();
         usuarioModel.password = bcryptjs.hashSync(password, salt);
 
         await usuarioModel.save(); //guarda en la DB
+
+        // generar jwt
+        const token = await generarJWT(usuarioModel.id, usuarioModel.name);
     
         res.status(201).json({
             msg: 'Usuario creado',
             uid: usuarioModel.id,
-            user: {name, email, password}
+            user: {name, email, password},
+            token
         })
     } catch (error) {
-        errorAdmin();
+        errorAdmin(error, res);
     }
 }
 
-const revalidarToken = (req, res = response) => {
+const revalidarToken = async(req, res = response) => {
+    const {uid, name} = req.payloadJWT;   
+    /* generar nuevo token */
+    const newToken = await generarJWT(uid, name);
     res.json({
-        msg: 'loginUsuario'
+        msg: 'revalidarToken',
+        newToken
     })
 }
 

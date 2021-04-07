@@ -1,6 +1,7 @@
 const express = require('express');
 const { dbConnection } = require('./db/dbConfig');
 require('dotenv').config();
+const cors = require('cors');
 
 const port = process.env.PORT;
 
@@ -9,6 +10,9 @@ const app = express();
 
 // Bases de datos conection
 dbConnection();
+
+//configuración del CORS
+app.use(cors());
 
 //Levantar el servidor
 app.listen(port, () => {
@@ -23,5 +27,6 @@ app.use(express.json());
 
 
 // Rutas
-app.use('/api/auth', require('./routes/auth'))
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/events', require('./routes/eventsRouts'));
 
