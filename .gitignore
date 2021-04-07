@@ -1,15 +1,16 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
+/frontEndApp/node_modules
 /node_modules
-/.pnp
+/frontEndApp/.pnp
 .pnp.js
 
 # testing
-/coverage
+/frontEndApp/coverage
 
 # production
-/build
+/frontEndApp/build
 
 # misc
 .DS_Store
