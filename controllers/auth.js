@@ -5,6 +5,7 @@ const { errorAdmin, errorNotEmail, errorExisteEmail, wrongPassword } = require('
 const { generarJWT } = require('../helpers/jwt');
 
 const loginUsuario = async(req, res = response) => {
+    console.log('loginUsuario')
     const {email, password} = req.body
     try {
         /* verificar si el email no existe en la db */
@@ -23,7 +24,7 @@ const loginUsuario = async(req, res = response) => {
         const token = await generarJWT(usuarioModel.id, usuarioModel.name);
 
         res.status(200).json({
-            msg: 'loginUsuario',
+            ok: true,
             uid: usuarioModel.id,
             name: usuarioModel.name,
             token
@@ -34,6 +35,7 @@ const loginUsuario = async(req, res = response) => {
 }
 
 const crearUsuario = async(req, res = response) => {    
+    console.log('crearUsuario')
     const {name, email, password} = req.body
     
     try {
@@ -54,9 +56,9 @@ const crearUsuario = async(req, res = response) => {
         const token = await generarJWT(usuarioModel.id, usuarioModel.name);
     
         res.status(201).json({
-            msg: 'Usuario creado',
+            ok: true,
             uid: usuarioModel.id,
-            user: {name, email, password},
+            user: {name, email},
             token
         })
     } catch (error) {
@@ -65,12 +67,14 @@ const crearUsuario = async(req, res = response) => {
 }
 
 const revalidarToken = async(req, res = response) => {
+    console.log('revalidarToken')
     const {uid, name} = req.payloadJWT;   
     /* generar nuevo token */
-    const newToken = await generarJWT(uid, name);
+    const token = await generarJWT(uid, name);
     res.json({
-        msg: 'revalidarToken',
-        newToken
+        ok: true,
+        token,
+        uid, name
     })
 }
 
