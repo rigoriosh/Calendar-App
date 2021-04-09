@@ -7,7 +7,7 @@ import DateTimePicker from 'react-datetime-picker';
 import Swal from 'sweetalert2';
 
 import { uiCloseModal } from '../../actions/ui';
-import { eventAddNew, eventClearActiveEvent, eventUpdated } from '../../actions/events';
+import { eventClearActiveEvent, eventStartAddNew, startEventUpdated } from '../../actions/events';
 
 
 const customStyles = {
@@ -37,6 +37,7 @@ export const CalendarModal = () => {
 
     const { modalOpen } = useSelector( state => state.ui );
     const { activeEvent } = useSelector( state => state.calendar );
+    const { uid} = useSelector( state => state.authReducer );
     const dispatch = useDispatch();
 
     const [ dateStart, setDateStart ] = useState( now.toDate() );
@@ -90,7 +91,7 @@ export const CalendarModal = () => {
 
     const handleSubmitForm = (e) => {
         e.preventDefault();
-        
+               
         const momentStart = moment( start );
         const momentEnd = moment( end );
 
@@ -99,20 +100,22 @@ export const CalendarModal = () => {
         }
 
         if ( title.trim().length < 2 ) {
+            Swal.fire('Nota','El titulo debe tener mas de 2 caracteres', 'warning');
             return setTitleValid(false);
         }
 
         if ( activeEvent ) {
-            dispatch( eventUpdated( formValues ) )
+            /* console.log('activeEvent.user._id=>', activeEvent.user._id)
+            console.log({uid}) */
+            if (activeEvent.user._id === uid) {
+                /* console.log({formValues}) */
+                dispatch( startEventUpdated( formValues ) )                
+                Swal.fire('info','Evento actualizado', 'success')
+            } else {
+                Swal.fire('Error','No tienes autorización para modificar este evento', 'warning')
+            }
         } else {
-            dispatch( eventAddNew({
-                ...formValues,
-                id: new Date().getTime(),
-                user: {
-                    _id: '123',
-                    name: 'Fernando'
-                }
-            }) );
+            dispatch( eventStartAddNew(formValues) );
         }
 
 

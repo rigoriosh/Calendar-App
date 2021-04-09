@@ -1,20 +1,20 @@
-import moment from 'moment';
+
 
 import { types } from '../types/types';
 
 const initialState = {
-    events: [{
-        id: new Date().getTime(),
+    events: [/* {
+        id: 'dfdffffsfd',
         title: 'Cumpleaños del jefe',
         start: moment().toDate(),
         end: moment().add( 2, 'hours' ).toDate(),
-        bgcolor: '#fafafa',
+        //bgcolor: '#fafafa',
         notes: 'Comprar el pastel',
         user: {
-            _id: '123',
-            name: 'Fernando'
+            _id: 'dadd546a5d54d6ad4',
+            name: 'Thiago Rios'
         }
-    }],
+    } */],
     activeEvent: null
 };
 
@@ -22,6 +22,12 @@ const initialState = {
 export const calendarReducer = ( state = initialState, action ) => {
 
     switch ( action.type ) {
+
+        case types.eventLoaded:
+            return {
+                ...state,
+                events: action.payload
+            }
         
         case types.eventSetActive:
             return {
@@ -44,12 +50,11 @@ export const calendarReducer = ( state = initialState, action ) => {
                 activeEvent: null
             }
 
-
         case types.eventUpdated:
             return {
                 ...state,
                 events: state.events.map(
-                    e => ( e.id === action.payload.id ) ? action.payload : e
+                    e => ( e.registerID === action.payload.registerID ) ? action.payload : e
                 )
             }
         
@@ -57,11 +62,16 @@ export const calendarReducer = ( state = initialState, action ) => {
             return {
                 ...state,
                 events: state.events.filter(
-                    e => ( e.id !== state.activeEvent.id )
+                    e => ( e.registerID !== state.activeEvent.registerID )
                 ),
                 activeEvent: null
             }
 
+        case types.eventLogout:
+            return {
+                ...state,
+                ...initialState
+            }
         default:
             return state;
     }

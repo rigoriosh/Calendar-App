@@ -14,8 +14,8 @@ import PublicRoute from './PublicRoute';
 
 export const AppRouter = () => {
     const dispatch = useDispatch();
-    const {checking, name, uid} = useSelector(state => state.authReducer)
-    console.log({checking, name, uid})
+    const {checking, uid} = useSelector(state => state.authReducer)
+    //console.log({checking, name, uid})
     useEffect(() => {
         dispatch(startCheking())
     }, [dispatch])

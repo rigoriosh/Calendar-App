@@ -80,3 +80,7 @@ html, body {
     position: fixed;
     left: 25px;
 }
+
+.rbc-btn-group{
+    display: none;
+}

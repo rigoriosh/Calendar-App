@@ -18,7 +18,7 @@ export const LoginScreen = () => {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        console.log(fieldsLogin)
+        //console.log(fieldsLogin)
         //pendiente validaciones
         dispatch(startLogin(loginEmail, loginPassword))
     }
@@ -36,7 +36,7 @@ export const LoginScreen = () => {
 
     const handleRegister = (e) => {
         e.preventDefault();
-        console.log(fieldsRegister)
+        //console.log(fieldsRegister)
         //pendiente validaciones
         if (registerPassword !== registerPasswordConfirm) {
             return Swal.fire('Error', 'Las contraseñas deben coincidir', 'warning')

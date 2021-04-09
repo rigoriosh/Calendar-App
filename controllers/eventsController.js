@@ -9,9 +9,8 @@ const getEventsController = async(req = request, res = response) => {
     const {uid, name} = req.payloadJWT;
     //const newToken = await generarJWT(uid, name);
 
-    const eventos = await EventoModels.find()
-                                        .populate('user', 'name email'); // con esta linea se pide que del registro usuario traiga a demas del id del usuario, traiga tambien los campos 'name' y 'email'
-
+    const eventos = await EventoModels.find(/* {user:uid} */).populate('user', 'name email'); // con esta linea se pide que del registro usuario traiga a demas del id del usuario, traiga tambien los campos 'name' y 'email'
+    //console.log(eventos)
     res.status(200).json({
         ok: true,
         msg: 'getEventsController',
@@ -48,18 +47,19 @@ const updateEventsController = async(req = request, res = response) => {
         
         if(evento.user.toString() !== uid) return notUserIdValidError(res);
 
-        const eventoAmodificar = {
+        const eventoActualizado = {
             ...req.body,
             user: uid
         }
 
         
-        const eventoActualizado = await EventoModels.findByIdAndUpdate(eventoID, eventoAmodificar);
+        const eventoModificado = await EventoModels.findByIdAndUpdate(eventoID, eventoActualizado);
         
         res.status(200).json({
             ok: true,
             msg: 'updateEventsController',
-            eventoAmodificar
+            eventoModificado,
+            eventoActualizado
         })
     } catch (error) {
         errorAdmin(error, res);
